@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from math import exp, log, radians, sin
 from pathlib import Path
 
 import pandas as pd
@@ -175,6 +176,28 @@ def evaluate_conclusion_table(table_number: int) -> tuple[pd.DataFrame, pd.DataF
         }
     )
     return pd.DataFrame(summary_rows), comparison
+
+
+def build_wall_friction_approximation_table() -> pd.DataFrame:
+    phi_values = [40.0, 35.0, 30.0, 25.0]
+    delta_ratios = [0.0, 1.0 / 3.0, 1.0 / 2.0, 2.0 / 3.0, 1.0]
+
+    rows: list[dict[str, float | str]] = []
+    for ratio in delta_ratios:
+        row: dict[str, float | str] = {"delta_over_phi": _ratio_label(ratio)}
+        for phi_deg in phi_values:
+            phi_rad = radians(phi_deg)
+            log_rankine_kp = log((1.0 + sin(phi_rad)) / (1.0 - sin(phi_rad)))
+            log_kp = log_rankine_kp * (1.443 * ratio * sin(phi_rad) + 1.0)
+            row[f"phi={int(phi_deg)}"] = round(exp(log_kp), 2)
+        rows.append(row)
+    return pd.DataFrame(rows)
+
+
+def build_wall_friction_approximation_table_for_phi(phi_deg: float) -> pd.DataFrame:
+    full_table = build_wall_friction_approximation_table()
+    column = f"phi={int(phi_deg)}"
+    return full_table[["delta_over_phi", column]].rename(columns={column: "w=0_b=0"})
 
 
 def _ratio_label(value: float) -> str:

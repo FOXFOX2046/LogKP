@@ -7,7 +7,12 @@ import streamlit as st
 from numerical_checks import compare_spiral_sector_moment
 from plots import plot_geometry, plot_passive_force_scan
 from solver import PassivePressureInput, evaluate_xi, scan_xi
-from validation import evaluate_table2, get_paper_conclusion_table, load_table4
+from validation import (
+    build_wall_friction_approximation_table_for_phi as build_approx_table_for_phi,
+    evaluate_table2,
+    get_paper_conclusion_table,
+    load_table4,
+)
 
 
 st.set_page_config(page_title="Verification of Paper Title", layout="wide")
@@ -19,6 +24,28 @@ def pretty_force_kn(result_force: float) -> str:
 
 def pretty_distance(value: float) -> str:
     return f"{value:.3f} m"
+
+
+def compute_coulomb_kp(phi_deg: float, delta_deg: float, beta_deg: float, theta_deg: float) -> float:
+    phi = np.radians(phi_deg)
+    delta = np.radians(delta_deg)
+    beta = np.radians(beta_deg)
+    theta = np.radians(theta_deg)
+
+    numerator = np.cos(theta + phi) ** 2
+    radical_term = (
+        np.sin(phi + delta) * np.sin(phi + beta)
+        / (np.cos(theta - delta) * np.cos(theta - beta))
+    )
+    radical_term = max(float(radical_term), 0.0)
+    denominator = (
+        np.cos(theta) ** 2
+        * np.cos(theta - delta)
+        * (1.0 - np.sqrt(radical_term)) ** 2
+    )
+    if abs(denominator) < 1e-12:
+        raise ValueError("Invalid Coulomb denominator.")
+    return float(numerator / denominator)
 
 
 def build_trace_table(best) -> pd.DataFrame:
@@ -47,6 +74,11 @@ def _coerce_manual_xi(raw_value: str | float, xi_min: float, xi_max: float, fall
 @st.cache_data(show_spinner=False)
 def load_paper_table(table_number: int) -> tuple[float, pd.DataFrame]:
     return get_paper_conclusion_table(table_number)
+
+
+@st.cache_data(show_spinner=False)
+def load_wall_friction_approximation_table_for_phi(phi_deg: float) -> pd.DataFrame:
+    return build_approx_table_for_phi(phi_deg)
 
 
 with st.sidebar:
@@ -454,3 +486,133 @@ with tab5:
         ),
         language="text",
     )
+
+    st.markdown("**Kp Formula (DM7) Table**")
+    st.caption("Approximation valid for wall inclination `ω = 0°` and backfill slope `β = 0°`.")
+    table_map = {40.0: 6, 35.0: 7, 30.0: 8, 25.0: 9}
+    approx_tabs = st.tabs(["φ = 40°", "φ = 35°", "φ = 30°", "φ = 25°"])
+    for idx, phi_value in enumerate([40.0, 35.0, 30.0, 25.0]):
+        with approx_tabs[idx]:
+            approx_raw_df = load_wall_friction_approximation_table_for_phi(phi_value)
+            _, exact_table_df = load_paper_table(table_map[phi_value])
+            comparison_df = pd.DataFrame(
+                {
+                    "δ/φ": approx_raw_df["delta_over_phi"],
+                    "Kp (DM7)": approx_raw_df["w=0_b=0"],
+                    "Kp (Log-Spiral Method)": exact_table_df["w=0_b=0"],
+                    "Difference": (approx_raw_df["w=0_b=0"] - exact_table_df["w=0_b=0"]).round(2),
+                }
+            )
+
+            st.metric("Condition", "ω = 0°, β = 0°")
+
+            st.markdown("**Comparison**")
+            st.dataframe(comparison_df, use_container_width=True, hide_index=True)
+
+    st.markdown("**Kp (DM7) Calculator**")
+    calc_col1, calc_col2 = st.columns(2)
+    calc_phi_deg = calc_col1.number_input(
+        "Soil Friction Angle φ (deg)",
+        min_value=1.0,
+        max_value=89.0,
+        value=40.0,
+        step=1.0,
+        key="approx_calc_phi_deg",
+    )
+    calc_delta_ratio = calc_col2.number_input(
+        "Wall Friction Ratio δ/φ",
+        min_value=0.0,
+        max_value=1.0,
+        value=0.33,
+        step=0.01,
+        key="approx_calc_delta_ratio",
+    )
+    calc_phi_rad = np.radians(calc_phi_deg)
+    calc_ln_kp = np.log((1.0 + np.sin(calc_phi_rad)) / (1.0 - np.sin(calc_phi_rad))) * (
+        1.443 * calc_delta_ratio * np.sin(calc_phi_rad) + 1.0
+    )
+    calc_kp = float(np.exp(calc_ln_kp))
+    calc_delta_deg = calc_phi_deg * calc_delta_ratio
+
+    st.code(
+        "ln(Kp) = ln((1 + sin(φ)) / (1 - sin(φ))) * [1.443 * (δ / φ) * sin(φ) + 1]",
+        language="text",
+    )
+    calc_result_df = pd.DataFrame(
+        [
+            ("Soil friction angle", f"φ = {calc_phi_deg:.2f}°"),
+            ("Wall friction ratio", f"δ/φ = {calc_delta_ratio:.3f}"),
+            ("Wall friction angle", f"δ = {calc_delta_deg:.3f}°"),
+            ("Natural log result", f"ln(Kp) = {calc_ln_kp:.5f}"),
+            ("Approximate passive coefficient", f"Kp = {calc_kp:.5f}"),
+        ],
+        columns=["Item", "Value"],
+    )
+    st.table(calc_result_df)
+
+    st.markdown("**Kp (Coulomb Theory) Calculator**")
+    st.caption("Based on the Coulomb passive earth pressure expression shown in the reference figure.")
+    coulomb_col1, coulomb_col2 = st.columns(2)
+    coulomb_phi_deg = coulomb_col1.number_input(
+        "Soil Friction Angle φ (deg) - Coulomb",
+        min_value=1.0,
+        max_value=89.0,
+        value=35.0,
+        step=1.0,
+        key="coulomb_phi_deg",
+    )
+    coulomb_delta_ratio = coulomb_col2.number_input(
+        "Wall Friction Ratio δ/φ - Coulomb",
+        min_value=0.0,
+        max_value=1.0,
+        value=0.33,
+        step=0.01,
+        key="coulomb_delta_ratio",
+    )
+    coulomb_col3, coulomb_col4 = st.columns(2)
+    coulomb_beta_deg = coulomb_col3.number_input(
+        "Backfill Slope β (deg) - Coulomb",
+        min_value=0.0,
+        max_value=89.0,
+        value=0.0,
+        step=1.0,
+        key="coulomb_beta_deg",
+    )
+    coulomb_theta_deg = coulomb_col4.number_input(
+        "Wall Inclination θ (deg) - Coulomb",
+        min_value=-45.0,
+        max_value=45.0,
+        value=0.0,
+        step=1.0,
+        key="coulomb_theta_deg",
+    )
+
+    try:
+        coulomb_delta_deg = coulomb_phi_deg * coulomb_delta_ratio
+        coulomb_kp = compute_coulomb_kp(
+            phi_deg=coulomb_phi_deg,
+            delta_deg=coulomb_delta_deg,
+            beta_deg=coulomb_beta_deg,
+            theta_deg=coulomb_theta_deg,
+        )
+        coulomb_pp = 0.5 * coulomb_kp * gamma * H**2
+        st.code(
+            "Kp = cos^2(θ + φ) / [cos^2(θ) cos(θ - δ) (1 - sqrt((sin(φ + δ) sin(φ + β)) / (cos(θ - δ) cos(θ - β)) ))^2]",
+            language="text",
+        )
+        coulomb_result_df = pd.DataFrame(
+            [
+                ("Soil friction angle", f"φ = {coulomb_phi_deg:.2f}°"),
+                ("Wall friction ratio", f"δ/φ = {coulomb_delta_ratio:.3f}"),
+                ("Wall friction angle", f"δ = {coulomb_delta_deg:.2f}°"),
+                ("Backfill slope angle", f"β = {coulomb_beta_deg:.2f}°"),
+                ("Wall inclination angle", f"θ = {coulomb_theta_deg:.2f}°"),
+                ("Passive earth pressure coefficient", f"Kp = {coulomb_kp:.5f}"),
+                ("Passive force with current H and γ", f"Pp = {coulomb_pp:.5f}"),
+            ],
+            columns=["Item", "Value"],
+        )
+        st.table(coulomb_result_df)
+        st.caption("Coulomb note: values are typically considered satisfactory for `δ < φ/3`.")
+    except Exception as exc:
+        st.warning(f"Coulomb calculator could not evaluate these inputs: {exc}")

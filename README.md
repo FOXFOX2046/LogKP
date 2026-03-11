@@ -15,6 +15,68 @@ This workspace implements a Streamlit-based verification app for the paper:
 - `data/`: validation tables transcribed from the paper
 - `tests/`: smoke tests for solver behavior
 
+## Data Structure
+
+### Core input model
+
+The main calculation input is the `PassivePressureInput` dataclass in [`solver.py`](/Users/dev/Documents/Playground/KP%20EQU/solver.py).
+
+| Field | Type | Meaning |
+|---|---|---|
+| `H` | `float` | Wall height |
+| `gamma` | `float` | Soil unit weight |
+| `phi_deg` | `float` | Soil friction angle in degrees |
+| `delta_deg` | `float` | Wall friction angle in degrees |
+| `beta_deg` | `float` | Backfill slope angle in degrees |
+| `omega_deg` | `float` | Wall inclination angle in degrees |
+| `q` | `float` | Uniform surcharge |
+
+### Geometry model
+
+The geometric reconstruction is stored in the `GeometryState` dataclass in [`geometry.py`](/Users/dev/Documents/Playground/KP%20EQU/geometry.py).
+
+Important fields:
+
+- `case`: failure mechanism case (`A` or `B`)
+- `xi`: current trial pole parameter
+- `a`, `b`, `g`, `f`, `f_prime`: key geometry points
+- `r0`, `rg`, `theta_g`, `lambda_angle`: log-spiral parameters
+- `ag`, `fg`, `hrw`: derived geometric lengths
+- `spiral_points`: sampled spiral curve coordinates as `np.ndarray`
+- `wedge_polygon`: slip-mass polygon coordinates as `np.ndarray`
+
+### Solver result model
+
+The main calculation output is the `PassivePressureResult` dataclass in [`solver.py`](/Users/dev/Documents/Playground/KP%20EQU/solver.py).
+
+Important fields:
+
+- `case`: chosen case for the current solution
+- `xi`: current or critical xi value
+- `passive_force`: resolved passive force `Pp`
+- `lever_arm`: moment arm for the passive force
+- `weight_moment`, `rankine_moment`, `surcharge_moment`, `rankine_surcharge_moment`: moment components
+- `wedge_area`, `wedge_centroid_x`: geometric mass properties
+- `geometry`: embedded `GeometryState`
+- `trace`: dictionary of intermediate calculation values for verification display
+
+### Tabular data
+
+The app uses `pandas.DataFrame` objects for reporting and verification.
+
+- `scan_df`: xi scan table returned by `scan_xi()`
+- `table2_validation.csv`: measured-versus-calculated validation data
+- `table4_validation.csv`: published comparison data
+- Table 6-9 rebuilt tables: generated in [`validation.py`](/Users/dev/Documents/Playground/KP%20EQU/validation.py)
+- DM7 formula tables: generated in [`validation.py`](/Users/dev/Documents/Playground/KP%20EQU/validation.py)
+
+### UI state
+
+The Streamlit app stores interactive geometry controls in `st.session_state`.
+
+- `picture_xi`: current xi used in the geometry display
+- `picture_xi_text`: text-box value paired with the manual xi input
+
 ## Run
 
 ```bash

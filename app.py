@@ -1,0 +1,456 @@
+from __future__ import annotations
+
+import numpy as np
+import pandas as pd
+import streamlit as st
+
+from numerical_checks import compare_spiral_sector_moment
+from plots import plot_geometry, plot_passive_force_scan
+from solver import PassivePressureInput, evaluate_xi, scan_xi
+from validation import evaluate_table2, get_paper_conclusion_table, load_table4
+
+
+st.set_page_config(page_title="Verification of Paper Title", layout="wide")
+
+
+def pretty_force_kn(result_force: float) -> str:
+    return f"{result_force:.2f} kN/m"
+
+
+def pretty_distance(value: float) -> str:
+    return f"{value:.3f} m"
+
+
+def build_trace_table(best) -> pd.DataFrame:
+    rows = [
+        ("Critical ξ", best.trace["xi"], "This is the ξ value that gives the smallest push."),
+        ("Which picture fit best", best.case, "Case A means the spiral center is outside. Case B means inside."),
+        ("Pp", best.trace["passive_force"], "This is the final passive soil force."),
+        ("HRW", best.trace["HRW"], "This is the height used for the Rankine helper triangle."),
+        ("L1", best.trace["L1"], "This is the lever arm used in the balance equation."),
+        ("r0", best.trace["r0"], "This is the first spiral radius."),
+        ("rg", best.trace["rg"], "This is the last spiral radius."),
+    ]
+    return pd.DataFrame(rows, columns=["Plain name", "Value", "What it means"])
+
+
+def _coerce_manual_xi(raw_value: str | float, xi_min: float, xi_max: float, fallback: float) -> float:
+    try:
+        xi_value = float(raw_value)
+    except (TypeError, ValueError):
+        return fallback
+    if abs(xi_value) < 1e-9:
+        xi_value = fallback
+    return min(max(xi_value, xi_min), xi_max)
+
+
+@st.cache_data(show_spinner=False)
+def load_paper_table(table_number: int) -> tuple[float, pd.DataFrame]:
+    return get_paper_conclusion_table(table_number)
+
+
+with st.sidebar:
+    st.title("Geotechnical Input Parameters")
+    st.write("Adjust the soil, wall, surcharge, and search parameters to evaluate the resulting passive earth pressure response.")
+
+    st.subheader("Wall and Soil")
+    H = st.text_input("Wall Height (H)", value="0.24")
+    gamma = st.text_input("Soil Unit Weight (γ)", value="15.3")
+    phi_deg = st.text_input("Soil Friction Angle (φ, deg)", value="35.5")
+    delta_deg = st.text_input("Wall Friction Angle (δ, deg)", value="24.0")
+
+    st.subheader("Ground Shape")
+    beta_deg = st.text_input("Backfill Slope Angle (β, deg)", value="0.0")
+    omega_deg = st.text_input("Wall Inclination Angle (ω, deg)", value="0.0")
+    q = st.text_input("Uniform Surcharge (q)", value="0.0")
+
+    st.subheader("Search Range")
+    xi_range_mode = st.radio("Xi Search Range (ξ)", options=["Auto", "Manual"], horizontal=True, index=0)
+    xi_min = st.text_input("Minimum Xi (ξ_min)", value="-0.50")
+    xi_max = st.text_input("Maximum Xi (ξ_max)", value="0.25")
+    n_xi = st.text_input("Number of Xi Points (n_ξ)", value="250")
+
+try:
+    H = float(H)
+    gamma = float(gamma)
+    phi_deg = float(phi_deg)
+    delta_deg = float(delta_deg)
+    beta_deg = float(beta_deg)
+    omega_deg = float(omega_deg)
+    q = float(q)
+    if xi_range_mode == "Auto":
+        xi_min = -3.0 * H
+        xi_max = 2.0 * H
+    else:
+        xi_min = float(xi_min)
+        xi_max = float(xi_max)
+    n_xi = int(float(n_xi))
+except ValueError:
+    st.error("Please type numbers only in the Control Panel text boxes.")
+    st.stop()
+
+if xi_range_mode == "Auto":
+    st.sidebar.caption(f"Auto ξ range: {xi_min:.4f} to {xi_max:.4f}")
+
+inputs = PassivePressureInput(
+    H=H,
+    gamma=gamma,
+    phi_deg=phi_deg,
+    delta_deg=delta_deg,
+    beta_deg=beta_deg,
+    omega_deg=omega_deg,
+    q=q,
+)
+
+try:
+    scan_df, best = scan_xi(inputs, xi_min, xi_max, n_xi)
+    check = compare_spiral_sector_moment(
+        best.geometry.r0,
+        np.radians(phi_deg),
+        best.geometry.theta_g,
+        best.geometry.lambda_angle,
+    )
+except Exception as exc:
+    st.error(f"I could not build the picture with these settings: {exc}")
+    st.stop()
+
+st.title("Verification of A Spreadsheet-Based Technique to Calculate the Passive Soil Pressure Based on the Log-Spiral Method")
+st.caption("Verification of the published paper calculations and figures.")
+
+hero_left, hero_mid, hero_right = st.columns(3)
+hero_left.metric("Minimum Pp", pretty_force_kn(best.passive_force))
+hero_mid.metric("Critical ξ", pretty_distance(best.xi))
+hero_right.metric("Best shape", f"Case {best.case}")
+
+tab1, tab2, tab3, tab4, tab5 = st.tabs(
+    [
+        "Theory",
+        "Results Summary",
+        "Geometry Visualization",
+        "Parametric Scan",
+        "Verification",
+    ]
+)
+
+with tab1:
+    st.subheader("Theory")
+    st.write("This tab summarizes the theory used in the paper and in this app.")
+
+    st.markdown("**1. Failure mechanism**")
+    st.write(
+        "The passive wedge is formed by a log-spiral arc plus a straight tangent line. "
+        "The spiral is described by `r = r0 * exp(θ tan φ)`."
+    )
+
+    st.markdown("**2. Two cases**")
+    st.write(
+        "Case A: the pole of the spiral is outside the soil mass. "
+        "Case B: the pole of the spiral is inside the soil mass."
+    )
+
+    st.markdown("**3. What ξ does**")
+    st.write(
+        "`ξ` controls the trial position of the spiral pole. "
+        "For each `ξ`, the app rebuilds the geometry and computes one passive force `Pp`."
+    )
+
+    st.markdown("**4. Limit equilibrium**")
+    st.write(
+        "The paper uses moment equilibrium about the pole `O`. "
+        "The resisting and driving moments are balanced to obtain `Pp`."
+    )
+
+    st.markdown("**5. Critical solution**")
+    st.write(
+        "The governing passive force is the minimum value on the `Pp - ξ` curve. "
+        "That minimum gives the critical `ξ` and the final solution."
+    )
+
+    st.markdown("**6. Passive pressure coefficient**")
+    st.write(
+        "After finding `Pp`, the coefficient `kp` is computed from "
+        "`Pp = 1/2 * kp * γ * H^2`, so `kp = 2 * Pp / (γ * H^2)`."
+    )
+
+    st.markdown("**Main equations used in the app**")
+    st.code(
+        "\n".join(
+            [
+                "α1 = π/4 - φ/2 + 1/2 asin(sinβ / sinφ) - β/2",
+                "α2 = π/4 - φ/2 - 1/2 asin(sinβ / sinφ) + β/2",
+                "r = r0 * exp(θ tanφ)",
+                "Passive force = min(Pp over ξ)",
+                "kp = 2 * Pp / (γ * H^2)",
+            ]
+        ),
+        language="text",
+    )
+
+    st.markdown("**In this app**")
+    theory_df = pd.DataFrame(
+        [
+            ("Input symbols", "H, γ, φ, δ, β, ω, q, ξ"),
+            ("Geometry output", "r0, rg, θg, HRW"),
+            ("Main result", "Pp"),
+            ("Table result", "kp"),
+        ],
+        columns=["Item", "Meaning"],
+    )
+    st.table(theory_df)
+
+    st.markdown("**SYMBOL ABBR**")
+    symbol_df = pd.DataFrame(
+        [
+            ("H", "Retained soil height"),
+            ("γ", "Soil unit weight"),
+            ("φ", "Internal friction angle of soil"),
+            ("δ", "Wall-soil interface friction angle"),
+            ("β", "Backfill slope angle"),
+            ("ω", "Wall inclination angle"),
+            ("q", "Uniform surcharge"),
+            ("ξ", "Trial pole-distance parameter used in the search"),
+            ("α1", "Rankine-zone angle from the paper"),
+            ("α2", "Companion Rankine-zone angle from the paper"),
+            ("η", "Derived angle used in geometry construction"),
+            ("r0", "Initial spiral radius at point b"),
+            ("rg", "Spiral radius at point g"),
+            ("θg", "Rotation angle from b to g on the spiral"),
+            ("HRW", "Height of the Rankine passive zone"),
+            ("L1", "Moment arm of passive force Pp"),
+            ("Pp", "Passive soil force"),
+            ("kp", "Coefficient of passive earth pressure"),
+            ("O", "Pole of the log spiral"),
+        ],
+        columns=["Symbol", "Meaning"],
+    )
+    st.dataframe(symbol_df, use_container_width=True, hide_index=True)
+
+with tab2:
+    st.subheader("What happened?")
+    st.write(
+        "The app tried many `ξ` positions. Then it picked the one with the smallest soil push on the wall."
+    )
+
+    answer_col, note_col = st.columns([1.2, 1])
+    with answer_col:
+        answer_df = pd.DataFrame(
+            [
+                ("H", f"{H:.2f} m"),
+                ("Pp", pretty_force_kn(best.passive_force)),
+                ("Critical ξ", pretty_distance(best.xi)),
+                ("Chosen case", f"Case {best.case}"),
+                ("HRW", pretty_distance(best.trace["HRW"])),
+            ],
+            columns=["Thing", "Value"],
+        )
+        st.table(answer_df)
+    with note_col:
+        st.write("")
+
+with tab3:
+    st.subheader("Dynamic Fig. 2")
+    st.caption(
+        f"Live geometry reconstructed from the current inputs. The figure updates automatically and is now showing Case {best.case}."
+    )
+
+    if "picture_xi" not in st.session_state:
+        st.session_state.picture_xi = float(best.xi)
+    if "picture_xi_text" not in st.session_state:
+        st.session_state.picture_xi_text = f"{best.xi:.4f}"
+
+    mode_col, value_col = st.columns([1, 1.2])
+    picture_mode = mode_col.radio(
+        "Pole O control",
+        options=["Auto (critical ξ)", "Manual ξ"],
+        horizontal=True,
+    )
+
+    picture_result = best
+    if picture_mode == "Manual ξ":
+        slider_col, text_col = value_col.columns([1.4, 1])
+        slider_value = slider_col.slider(
+            "Pull Pole O with ξ",
+            min_value=float(xi_min),
+            max_value=float(xi_max),
+            value=float(_coerce_manual_xi(st.session_state.picture_xi, xi_min, xi_max, best.xi)),
+            step=max((xi_max - xi_min) / 400.0, 0.0001),
+            key="picture_xi_slider",
+        )
+        if abs(slider_value - float(st.session_state.picture_xi)) > 1e-9:
+            st.session_state.picture_xi = float(slider_value)
+            st.session_state.picture_xi_text = f"{slider_value:.4f}"
+
+        manual_text = text_col.text_input("Exact ξ", value=st.session_state.picture_xi_text, key="picture_xi_text_input")
+        parsed_text_xi = _coerce_manual_xi(manual_text, xi_min, xi_max, st.session_state.picture_xi)
+        if manual_text != st.session_state.picture_xi_text:
+            st.session_state.picture_xi_text = manual_text
+        if abs(parsed_text_xi - float(st.session_state.picture_xi)) > 1e-9:
+            st.session_state.picture_xi = float(parsed_text_xi)
+            st.session_state.picture_xi_text = f"{parsed_text_xi:.4f}"
+
+        manual_xi = float(st.session_state.picture_xi)
+        try:
+            picture_result = evaluate_xi(inputs, manual_xi)
+            st.session_state.picture_xi = float(picture_result.xi)
+            st.session_state.picture_xi_text = f"{picture_result.xi:.4f}"
+        except Exception as exc:
+            st.warning(f"This ξ does not create a valid geometry: {exc}")
+            fallback_xi = float(best.xi)
+            try:
+                picture_result = evaluate_xi(inputs, fallback_xi)
+            except Exception:
+                picture_result = best
+            st.session_state.picture_xi = float(picture_result.xi)
+            st.session_state.picture_xi_text = f"{picture_result.xi:.4f}"
+    else:
+        st.session_state.picture_xi = float(best.xi)
+        st.session_state.picture_xi_text = f"{best.xi:.4f}"
+        value_col.metric("Critical ξ", pretty_distance(best.xi))
+
+    left_pad, figure_col, right_pad = st.columns([1, 2, 1])
+    with figure_col:
+        st.pyplot(plot_geometry(picture_result), use_container_width=False)
+    st.write(
+        "The blue curve is `bg`, the orange line is `gf`, the green line is the backfill surface, and the red dot is pole `O`."
+    )
+    pic_a, pic_b, pic_c = st.columns(3)
+    pic_a.metric("Shown ξ", pretty_distance(picture_result.xi))
+    pic_b.metric("Shown case", f"Case {picture_result.case}")
+    pic_c.metric("Shown Pp", pretty_force_kn(picture_result.passive_force))
+
+with tab4:
+    st.subheader("Every try the app tested")
+    left_pad, chart_col, right_pad = st.columns([1, 2, 1])
+    with chart_col:
+        st.pyplot(plot_passive_force_scan(scan_df, best), use_container_width=False)
+    simple_scan = scan_df.rename(
+        columns={
+            "xi": "ξ",
+            "case": "Shape",
+            "passive_force": "Pp",
+            "lever_arm": "L1",
+        }
+    )
+    st.dataframe(simple_scan, use_container_width=True, hide_index=True)
+
+with tab5:
+    st.subheader("Checks for engineers and reviewers")
+    st.write("This part keeps the math audit trail visible without crowding the main screen.")
+
+    st.markdown("**Plain-language trace**")
+    st.dataframe(build_trace_table(best), use_container_width=True, hide_index=True)
+
+    with st.expander("Equation check: spiral sector moment"):
+        check_df = pd.DataFrame(
+            [
+                ("Paper formula result", check["analytical"]),
+                ("Numerical integration result", check["numerical"]),
+                ("Difference (%)", check["error_pct"]),
+            ],
+            columns=["Check", "Value"],
+        )
+        st.table(check_df)
+
+    with st.expander("Paper validation table"):
+        st.dataframe(evaluate_table2(), use_container_width=True, hide_index=True)
+
+    with st.expander("Published larger-scale comparison"):
+        st.dataframe(load_table4(), use_container_width=True, hide_index=True)
+
+    with st.expander("Full raw trace"):
+        raw_trace = pd.DataFrame([best.trace]).T.reset_index()
+        raw_trace.columns = ["Name", "Value"]
+        st.dataframe(raw_trace, use_container_width=True, hide_index=True)
+
+    st.markdown("**Paper Tables 6-9**")
+    table_choice = st.selectbox(
+        "Pick a rebuilt paper table",
+        options=[6, 7, 8, 9],
+        index=0,
+        format_func=lambda x: f"Table {x}",
+        key="paper_table_choice",
+    )
+    phi_choice, table_df = load_paper_table(int(table_choice))
+    st.caption(f"Paper Table {table_choice}: coefficient of passive pressure `kp` for `φ = {phi_choice:.0f}°`.")
+
+    pretty_columns = {"delta_over_phi": "δ/φ"}
+    for omega_deg in [0, 5, 10, 15]:
+        for beta_deg in [0, 5, 10, 15]:
+            pretty_columns[f"w={omega_deg}_b={beta_deg}"] = f"ω={omega_deg}, β={beta_deg}"
+
+    st.dataframe(table_df.rename(columns=pretty_columns), use_container_width=True, hide_index=True)
+
+    csv_data = table_df.to_csv(index=False).encode("utf-8")
+    st.download_button(
+        "Download rebuilt table as CSV",
+        data=csv_data,
+        file_name=f"paper_table_{table_choice}_phi_{int(phi_choice)}.csv",
+        mime="text/csv",
+    )
+
+    st.markdown("**Calculation step**")
+    explain_col1, explain_col2, explain_col3 = st.columns(3)
+    ratio_choice = explain_col1.selectbox(
+        "Pick δ/φ",
+        options=["0", "1/3", "1/2", "2/3", "1"],
+        index=0,
+        key="paper_table_ratio_choice",
+    )
+    omega_choice = explain_col2.selectbox(
+        "Pick ω",
+        options=[0, 5, 10, 15],
+        index=0,
+        key="paper_table_omega_choice",
+    )
+    beta_choice = explain_col3.selectbox(
+        "Pick β",
+        options=[0, 5, 10, 15],
+        index=0,
+        key="paper_table_beta_choice",
+    )
+
+    ratio_map = {"0": 0.0, "1/3": 1.0 / 3.0, "1/2": 1.0 / 2.0, "2/3": 2.0 / 3.0, "1": 1.0}
+    delta_ratio = ratio_map[ratio_choice]
+    delta_value = float(phi_choice) * delta_ratio
+    explain_inputs = PassivePressureInput(
+        H=1.0,
+        gamma=1.0,
+        phi_deg=float(phi_choice),
+        delta_deg=delta_value,
+        beta_deg=float(beta_choice),
+        omega_deg=float(omega_choice),
+        q=0.0,
+    )
+    _, explain_best = scan_xi(explain_inputs, -20.0, 5.0, 1800)
+    explain_kp = 2.0 * explain_best.passive_force / (explain_inputs.gamma * explain_inputs.H**2)
+
+    explain_df = pd.DataFrame(
+        [
+            ("1. Pick paper table", f"Table {table_choice}"),
+            ("2. Use soil friction angle φ", f"{phi_choice:.0f} deg"),
+            ("3. Pick δ/φ", ratio_choice),
+            ("4. Convert to wall friction δ", f"{phi_choice:.0f} x {ratio_choice} = {delta_value:.3f} deg"),
+            ("5. Pick wall inclination ω", f"{omega_choice} deg"),
+            ("6. Pick backfill slope β", f"{beta_choice} deg"),
+            ("7. Use paper standard values", "H = 1, γ = 1, q = 0"),
+            ("8. Number of xi points", "n_ξ = 1800"),
+            ("9. Scan trial ξ values", "Search from -20.0 to 5.0"),
+            ("10. Find critical ξ", f"{explain_best.xi:.4f}"),
+            ("11. Minimum passive force Pp", f"{explain_best.passive_force:.5f}"),
+            ("12. Convert Pp to kp", f"kp = 2 x Pp / (γ x H^2) = {explain_kp:.5f}"),
+            ("13. Table cell value", f"{explain_kp:.2f}"),
+        ],
+        columns=["Step", "Result"],
+    )
+    st.table(explain_df)
+
+    st.code(
+        "\n".join(
+            [
+                "δ = φ * (δ/φ)",
+                "scan ξ -> find minimum Pp",
+                "kp = 2 * Pp / (γ * H^2)",
+            ]
+        ),
+        language="text",
+    )

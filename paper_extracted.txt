@@ -1,0 +1,1306 @@
+Computers and Geotechnics 130 (2021) 103926
+Available online 9 December 2020
+0266-352X/© 2020 Elsevier Ltd. All rights reserved.
+Research Paper 
+A spreadsheet-based technique to calculate the passive soil pressure based 
+on the log-spiral method 
+A.S. Alqarawi
+a,*, C.J. Leo b, D.S. Liyanapathirana a, L. Sigdel a, M. Lu a, P. Hu a 
+a School of Engineering, Western Sydney University, Locked Bag 1797, Kingswood, NSW 2751, Australia 
+b School of Engineering, Western Sydney University, Victoria Rd, Rydalmere, NSW 2116, Australia   
+ARTICLE INFO  
+Keywords: 
+Passive earth pressure 
+Log-spiral method 
+Retaining walls 
+Cohesionless backfill 
+ABSTRACT  
+This paper presents an efficient technique to calculate the passive earth pressure of a cohesionless sloping backfill 
+on a rigid retaining wall which is an extension of the Terzaghi’s log-spiral approach. Moment equilibrium 
+conditions are used to compute the minimum value of the passive pressure required to mobilize the passive 
+failure. Terzaghi assumed that the pole of the log-spiral failure surface lies inside the soil mass, whereas the 
+proposed technique and solutions show that the pole can lie inside or outside the soil mass. Thus, the developed 
+technique has extended the log-spiral method reported by Terzaghi by providing a generalised solution. The 
+distinctive feature of the proposed technique is the explicit and rigorous solutions developed which allow to 
+evaluate the passive earth pressure with different friction angles for the soil and wall-soil interface, backfill 
+slopes and wall inclination angles. These solutions are relatively simple to incorporate into a spreadsheet to 
+derive the passive force and pressure. A series of experiments were carried out using a physical model and the 
+Particle Image Velocimetry (PIV) technique to analyse the failure surface. The developed solutions were then 
+validated with data obtained from model tests as well as experimental data found in the literature.   
+1. Introduction 
+The lateral earth pressure is one of the primary parameters influ-
+encing the interaction between the soil and adjacent structural mem-
+bers. Therefore, estimation of the earth pressure is vital when the design 
+of such structural members is sought. While many retaining structures 
+are designed considering an active or at-rest state for the backfill, in 
+practice there are certain cases, where the interaction mobilizes a pas-
+sive earth pressure. Such cases require adequate estimation of the pas-
+sive earth pressure. 
+Classical theories, such as 
+Coulomb (1973) and Rankine (1857) are 
+widely used as the fundamental methodologies to estimate the lateral 
+passive pressure of the backfill on retaining walls. For instance, most of 
+the American states use Rankine triangular earth pressure in the esti-
+mation of passive earth pressure behind the abutments of Integral 
+bridges (
+Kunin and Alampalli, 2000 ). They use the limit equilibrium 
+approach to calculate the passive earth pressure and the coefficient of 
+passive pressure, k
+p. Although the cited theories involve a number of 
+differences, they all assumed the passive failure surface to be planar. 
+Coulomb (1973), assumed that the failure occurs along a plane surface 
+that passes through the toe of the wall at an angle θ with the horizontal 
+such that the passive pressure acting on the retained structure is a 
+minimum. 
+Rankine (1857), on the other hand stipulated that the passive 
+failure surface is a plane, inclined at (45 /uni2212.texminus φ/2) to the principle hori-
+zontal axis (where φ represents the internal friction angle of the soil). 
+However, the assumption of a planar failure surface can be problematic 
+when the wall surface is not smooth. According to 
+Terzaghi (1943) and 
+Terzaghi et al. (1996), the failure surface is not a plane when the angle of 
+the interface friction δ between the wall and the retained backfill is more 
+than zero. Terzaghi et al. (1996) stated, when the angle δ is greater than 
+φ/3 the curvature of the failure surface becomes significant and hence 
+this curvature must be taken into consideration in the calculation of the 
+passive earth pressure. 
+In a real practical case, the interface friction between the wall and 
+the soil is far from being ideally smooth, hence appropriate estimation of 
+the passive earth pressure must account for the curvature in the failure 
+surface. 
+Terzaghi (1943) stated that sufficiently accurate results can be 
+obtained when a logarithmic spiral arc is used to represent the bottom 
+part of the rupture surface (curve bg in 
+Fig. 1) while the rest of the 
+surface is a tangential line to the log-spiral curve rising up at an angle 
+* Corresponding author. 
+E-mail addresses: a.al-qarawi@westernsydney.edu.au (A.S. Alqarawi), C.leo@westernsydney.edu.au (C.J. Leo), S.Liyanapathirana@westernsydney.edu.au 
+(D.S. Liyanapathirana), L.sigdel4@westernsydney.edu.au (L. Sigdel), 18404281@student.westernsydney.edu.au (M. Lu), P.Hu@westernsydney.edu.au (P. Hu).  
+Contents lists available at ScienceDirect 
+Computers and Geotechnics 
+journal homepage: www.elsevier.com/locate/compgeo 
+https://doi.org/10.1016/j.compgeo.2020.103926 
+Received 8 May 2020; Received in revised form 21 September 2020; Accepted 13 November 2020   
+Computers and Geotechnics 130 (2021) 103926
+2
+equal to (45 /uni2212.texminus φ/2) with the horizontal. 
+The log-spiral method proposed by Terzaghi (1943) was used by a 
+number of experimental studies and showed to be in closer agreement, 
+with the measured data, than Rankine or Coulomb methods. 
+Duncan and 
+Mokwa (2001) studied the passive earth pressure mobilized due to the 
+translation of 1 m high concrete bulkhead embedded in the soil and 
+concluded that the log-spiral method is the most accurate theory for 
+estimating the passive earth pressure over a wide range of interface 
+friction angles. 
+Fang et al. (2002) reported experimental results from 
+testing using dry sand under monotonic rigid wall movements. They 
+stated that the log-spiral method proposed by Terzaghi can successfully 
+replicate the passive earth pressure by using the critical state concept. 
+Wilson and Elgamal (2010) conducted large scale model tests using 
+granular soil to measure the passive earth pressure. They reported that 
+the log-spiral prediction provided very good estimation by comparing 
+with the measured data. 
+Rollins et al. (2017) reported that the lateral 
+passive pressure calculated using the log-spiral method replicates the 
+measured force within an error of less than 10% compared to 47% and 
+60% respectively, using Coulomb and Rankine methods. 
+Although the log-spiral theory can provide an accurate means to 
+estimate the passive earth pressure, design engineers often prefer 
+Rankine and Coulomb methods, due to their simplicity, despite of the 
+potential misrepresentation of the actual conditions. The primary reason 
+behind that is the lack of a rigorous solution to evaluate the passive earth 
+pressure using the log-spiral theory. Even though, the latter was devel-
+oped a few decades ago, (
+Terzaghi 1943), limited research studies uti-
+lized the log-spiral composite failure to estimate the static passive earth 
+pressure (
+Terzaghi, 1943; Terzaghi et al., 1996; Patki et al., 2015; Liu 
+et al., 2018 ), and none have developed comprehensive easy-to- 
+implement solutions. Terzaghi’s (1943, 1996 ) solution is proposed 
+only for the cases when the pole of the log-spiral is located inside the slip 
+mass; 
+Liu et al. (2018) proposed a complicated solution based on the 
+pole outside the slip mass. The solution developed by Patki et al. (2015) 
+does not apply to sloping backfills. 
+This study aims to develop a comprehensive and rigorous numerical 
+solution, based on the log-spiral theory, such that it can be easily 
+formulated on a spreadsheet to estimate the passive pressure of the soil 
+acting on a rigid retaining wall. The proposed solution is versatile and 
+can examine different internal friction angles, wall-soil interface friction 
+angles, wall inclinations, backfill slopes and external surcharge, and 
+covering the possibility of the pole located either inside or outside the 
+slip mass. In this paper, the proposed solution will be referred to as the 
+“log-spiral solution” . 
+2. Properties of the failure surface 
+Fig. 1 shows a hypothetical case, where a rigid wall retains a ho-
+mogenous deposit of dry cohesionless soil with a unit weight of γand 
+friction angle of φ. The backfill is inclined at an angle β with the hori-
+zontal while the wall face is inclined at an angle ω to the vertical. 
+Imagine the wall translates monotonically against the backfill until a 
+localized plastic equilibrium is reached in the soil close to the wall. This 
+state is expressed by the mobilization of a passive failure in the retained 
+soil. The failure occurs when the passive wedge abge is at the verge of 
+sliding along bge. Therefore, the latter is often termed as the sliding or 
+the failure surface. 
+The composite failure surface bge, in the case prescribed in 
+Fig. 1, is 
+based on the hypotheses of Terzaghi (1943) . Hence, it comprises a 
+logarithmic spiral arc, bg, and a straight line ge, which is a tangent to the 
+spiral at point g. The passive wedge consists of the area abg (outlined by 
+the log-spiral arc) and the Rankine passive zone outlined by the isosceles 
+triangle age (
+Terzaghi et al. 1996). Liu et al. (2018) stated that the angles 
+α1 and α2for a cohesionless sloped backfill can be calculated using the 
+following relationships, 
+α1 = π
+4 /uni2212.texminus φ
+2 + 1
+2arcsin
+(
+sinβ
+sinφ
+)
+/uni2212.texminus β
+2 (1)  
+α2 = π
+4 /uni2212.texminus φ
+2 /uni2212.texminus 1
+2arcsin
+(
+sinβ
+sinφ
+)
++ β
+2 (2) 
+Therefore, when the backfill is horizontal (β = 0), 
+α1 = α2 = π
+4 /uni2212.texminus ϕ
+2. 
+The force Pp that mobilises the passive failure acts on the wall at an 
+angle ( δ/uni2212.texminus ω) with the horizontal, whereas δrepresents the interface 
+friction angle. 
+The log-spiral arc, bg, is given by the formula, 
+ri = roeθitanφ (3)  
+where ro is the initial radius of the spiral arc at point b, ri represents the 
+radius of the spiral at any random point i on the spiral arc, θiis the angle 
+of rotation subtended by ro and ri, and φ represents the internal friction 
+angle of the soil. Hence, at point g, the Eq. (3) can be written as, 
+rg = roeθgtanφ (4) 
+It is apparent that the size of the spiral arc is characterized by ro, rg, θg 
+and φ. While φ is taken as a constant for a given type of soil, the 
+remaining parameters are functions of the virtual location of the Pole O 
+of the log-spiral. The location of the Pole O, therefore, is essential in 
+developing a generalised solution for the problem illustrated in 
+Fig. 1. 
+Logically, the Pole O can be located either outside the soil mass 
+Fig. 1. The composite log-spiral failure surface.  
+A.S. Alqarawi et al.                                                                                                                                                                                                                            
+Computers and Geotechnics 130 (2021) 103926
+3
+(Fig. 2a) or inside the soil mass (Fig. 2b). While the Pole can also fall at 
+point a, this can be treated as a unique limiting case of either (a) or (b) 
+above (the Pole lies outside and inside the soil mass, respectively) but 
+not as an independent case. 
+Terzaghi et al. (1996) suggested that the 
+Pole lies on the line Og inside the soil mass (i.e., case b above). However, 
+they did not discuss the possibility of the Pole to be located outside the 
+soil mass. Until recently, 
+Liu et al. (2018) developed a mathematical 
+formulation to estimate the passive earth pressure coefficient, kp, 
+assuming that the Pole of the spiral falls outside the soil mass. However, 
+developing a solution based on the assumption of the Pole either inside 
+or outside the soil mass only may not cover all potential solutions. 
+Moreover, the solutions developed by 
+Liu et al. (2018) are based on 
+minimising the passive force objective function expressed in terms of the 
+“design variable” which is the y-coordinate of an intersection point 
+vertically above point g and horizontally aligned with point a, in 
+Fig. 2. 
+As will be shown later, this paper proposes an alternative, simpler 
+“design variable” ξ which is based on the distance Oa. 
+Patki et al. (2015) 
+proposed a numerical solution to determine the lateral earth pressure 
+using the log-spiral method assuming an arbitrary location of the Pole O 
+along the spiral radius. However, their solution is limited to horizontal 
+backfill (β = 0) and does not apply for sloping backfill. Therefore, the 
+present study aims to develop a generalised solution that examines both 
+cases of Pole O location (inside and outside the soil mass) and applies to 
+horizontal and sloping backfill, vertical and inclined wall and to a wide 
+range of interface friction angles. 
+From the simplified description above, it is understood that the 
+magnitude of the force due to passive soil pressure, P
+p, in Fig. 1, can be 
+calculated using the principle of the limit equilibrium. This requires 
+accounting for the forces acting on the passive wedge, the wall and the 
+failure surface. These forces include the self-weight of the passive soil 
+wedge, the soil reaction forces acting along the slip surface in addition to 
+the force P
+p. In order to achieve a determinate solution for the problem, 
+the area fge of the passive wedge is replaced by a Rankine passive 
+pressure triangle as shown in Fig. 3 (Terzaghi et al. 1996). However, the 
+system given in Fig. 3 is just an illustration of the free body diagram of 
+the failure wedge with an arbitrary location of the Pole O outside the soil 
+Fig. 2. The failure surface when the spiral Pole is (a) outside the soil mass and (b) inside the soil mass.  
+Fig. 3. Free body diagram of the failure wedge.  
+A.S. Alqarawi et al.                                                                                                                                                                                                                            
+Computers and Geotechnics 130 (2021) 103926
+4
+mass (Case-a). As the location of the Pole is normally unknown, it is 
+impossible to figure out the characteristics of the failure surface and 
+accordingly the passive earth pressure. A meaningful approach to deal 
+with such a problem is to find the unique solution given as the minimum 
+magnitude of the passive earth pressure corresponding to the failure 
+surfaces defined by the parameter ξ. 
+3. Formulation of the limiting equilibrium state 
+As described earlier, the proposed log-spiral solution is formulated 
+based on the principles of the limit equilibrium. Hence, the moment 
+equilibrium about the Pole O is applied. This however, depends heavily 
+on the location of the Pole inside or outside the soil mass. Therefore, the 
+solution will be presented firstly for Case-a (Pole outside the soil mass) 
+and then for Case-b (Pole inside the soil mass) separately. 
+3.1. Case-a: the pole lies outside slip mass 
+Let us assume that the Pole O lies on the line Oa outside the slip mass 
+abge (see 
+Fig. 4 below) at an arbitrary distance ξ (“ design parameter” ) 
+from point a. Pole O slides along the direction of Oa to generate a range 
+of log-spiral curves bg. According to the given assumptions, the 
+following relationships can be established, 
+H(the vertical projection of the retained length ab ) = | ab|cos
+ω (5)  
+x
+′
+(thehorizontaloffset betweenpointsaand b ) = | ab|sinω (6)  
+η= α1 /uni2212.texminus β (7)  
+Distance Oa= | ξ| (8) 
+In a given trial, let ξ be specified (note: ξ is taken as negative when 
+the Pole lies outside the soil mass as in Case-a), and based on that, the 
+following parameters can be computed: 
+Coordinates of point a (x
+a, ya): 
+xa = | ξ|cosη (9)  
+ya = | ξ|sinη (10)  
+ro =
+̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅
+(H+ ya)2 + (xa + x
+′
+)2
+√
+(11)  
+Coordinates of point b(xb, yb) :
+xb = xa+ |x
+′
+| (12)  
+yb = ya+ H (13)  
+θg = sin/uni2212.texminus 1
+yb
+ro
+/uni2212.texminus η (14) 
+Coordinates of point g (xg, yg): 
+xg = rgcosη (15)  
+yg = rgsinη (16)  
+|ag| = rg/uni2212.texminus | ξ| (17)  
+|fg| = | ag|sinα1 (18) 
+Coordinates of point f (xf, yf): 
+xf = xg/uni2212.texminus | fg|sinβ (19)  
+yf = yg/uni2212.texminus | fg|cosβ (20) 
+The slip mass abge is also defined, including the log-spiral bg, the 
+coordinates of which can be established using the log-spiral relationship 
+(equation 
+(3)), where θ is the angle subtended between the log-spiral 
+radius r and ro (see Fig. 4). The coordinates of point p on the log-spiral 
+curve are then given by: 
+x
+p = rsin(θ+ λ) (21)  
+yp = rcos(θ+ λ) (22)  
+Fig. 4. Slip mass when the Pole of the spiral is outside the slip mass.  
+A.S. Alqarawi et al.                                                                                                                                                                                                                            
+Computers and Geotechnics 130 (2021) 103926
+5
+where λ is an angle subtended by ro and the vertical axis. 
+The area moment of abg about the Pole O is given by, 
+Ma
+abg = Ma
+obg/uni2212.texminus Ma
+oba (23)  
+where Ma
+obgis the area moment of the log-spiral sector obg and Ma
+oba is the 
+area moment of the triangle oba (see 
+Fig. 4). Now an infinitesimal sector 
+with subtended angle dθof the log-spiral is considered in Fig. 5 . The 
+centroid of that sector is located at 2
+3r from the Pole O. 
+Then the anticlockwise incremental area moment dMa about O is 
+given by: 
+dMa =
+1
+2 dθr2 .
+2
+3 rsin(θ+ λ) (24) 
+Expanding and considering that r = roeθtanφ gives: 
+dMa =
+1
+3r3
+oe3 θtanφ(sinθcosλ+ cosθsinλ)dθ (25)  
+which leads to, 
+Ma
+obg =
+1
+3r3
+o
+∫ θg
+0
+e3 θtanφ(sinθcosλ+ cosθsinλ)dθ (26) 
+Integrating by parts, Eq. 
+(27) is obtained: 
+Ma
+obg = r3
+ocosλ
+3 (1 + 9 tan2 ϕ
+) [
+1 + e3 θgtanϕ/uni0028.big 
+3 tanϕsinθg /uni2212.texminus cosθg
+) ]
++
+r3
+osinλ
+3 (1 + 9 tan2 ϕ
+) [
+e3 θgtanϕ/uni0028.big 
+sinθg + 3 tanϕcosθg
+)
+/uni2212.texminus 3 tanϕ
+]
+(27) 
+Similarly, the anticlockwise moment arm of triangle oba is, 
+xoba = 1
+3 (xa + xb) (28)  
+so that, 
+Ma
+oba =
+1
+6 (xayb /uni2212.texminus xbya)(xa + xb) (29) 
+The anticlockwise moment due to self-weight of slip mass abg about 
+O is: 
+Mabg =
+(
+Ma
+obg /uni2212.texminus Ma
+oba
+)
+γ (30) 
+Considering 
+Fig. 6, the following relationships can be derived, 
+υ= η/uni2212.texminus δ+ ω (31)  
+|ka| = | ξ|sinυ (32)  
+|da| =
+(2
+3 |ab|
+)
+cosδ (33)  
+L1 = | ka| + |da| (34)  
+LRW = rgsin
+α1 /uni2212.texminus 
+(1
+3 |fg|
+)
+(35)  
+Surcharge load , V= q|af
+′
+| (36)  
+where af
+′
+= | af| + |fg|tanβ (37)  
+af =
+⃒
+⃒xf /uni2212.texminus xa
+⃒
+⃒
+cosβ (38)  
+Mq is the moment produced by the surcharge q about the Pole O 
+Mq = V
+⃒
+⃒
+⃒xa +
+(
+xf′ /uni2212.texminus xa
+2
+) ⃒
+⃒
+⃒, where xf′ = xg (39)  
+PRW =
+1
+2kpγH2
+RWcosβ (40)  
+where HRW is calculated as, 
+HRW =
+|fg|
+cosβ (41)  
+kp is Rankine ’s passive pressure coefficient for sloped backfill and 
+calculated as, 
+kp =
+cosβ+
+̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅
+cos2 β/uni2212.texminus cos2 φ
+√
+cosβ/uni2212.texminus 
+̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅
+cos2 β/uni2212.texminus cos2 φ
+√ (42)  
+Magf′ =
+1
+6 |af
+′
+||fg|γ
+/uni0028.big 
+xa + xg + xf′
+)
+(43)  
+Fq = qcosβkpHRW (44)  
+Lq = rgsin
+α1 /uni2212.texminus 
+(|fg|
+2
+)
+(45)  
+Mqh = FqLq (46) 
+By taking moment equilibrium about O: 
+Pp = 1
+L1
+/uni0028.big 
+PRWLRW + Mqh + Mabg + Mq + Magf′
+)
+(47) 
+Finally, passive force = min Pp. 
+For a given wall geometry (wall height and slope angles) and set of 
+geotechnical properties (internal friction angle, unit weight of soil and 
+wall-soil interface friction), the passive force P
+p is a function of the ξ 
+through the parameters L1, PRW, LRW etc. in equation (47). Thus, a 
+spreadsheet can be easily set up to compute Pp and determine its mini-
+mum value as a function of ξ. 
+3.2. Case-b: the pole lies inside slip mass 
+In Case-b, the Pole is assumed to be located inside the slip mass as 
+shown in Fig. 7. Under this assumption, the area moments are different 
+Fig. 5. Infinitesimal sector of log-spiral in Case-a.  
+A.S. Alqarawi et al.                                                                                                                                                                                                                            
+Computers and Geotechnics 130 (2021) 103926
+6
+compared to those discussed for Case-a. 
+Similar to Case-a, at a given ξ (note: ξ is taken as positive when the 
+Pole lies inside the soil mass) the following relationships can be 
+established, 
+Coordinates of point a, 
+xa = /uni2212.texminus ( ξcos
+η) (48)  
+ya = /uni2212.texminus ( ξsinη) (49) 
+Coordinates of point b, 
+xb = x
+′
++ xa (50)  
+yb = H+ ya (51)  
+r0 =
+̅̅̅̅̅̅̅̅̅̅̅̅̅̅
+x2
+b+ y2
+b
+√
+(52)  
+λ= sin/uni2212.texminus 1
+xb
+ro
+(53) 
+Fig. 6. Forces and moment arms about the Pole O in Case-a.  
+Fig. 7. Slip mass when the Pole of the log-spiral is inside the slip mass.  
+A.S. Alqarawi et al.                                                                                                                                                                                                                            
+Computers and Geotechnics 130 (2021) 103926
+7
+θg = 90
+◦
+/uni2212.texminus λ/uni2212.texminus η (54)  
+rg = Og= roeθgtanφ (55) 
+Coordinates of point g, 
+xg = rgcosη (56)  
+yg = rgsinη (57)  
+ag= | ξ| + rg (58)  
+fg= | ag|sinα1 (59) 
+Coordinates of point f, 
+xf = xg/uni2212.texminus ( fgsinβ) (60)  
+yf = yg/uni2212.texminus fgcosβ (61)  
+xp = rsin(θ+ λ) (62)  
+yp = rcos(θ+ λ) (63) 
+Calculation of the area moments of oba, agf
+′
+(see Fig. 8) 
+Ma
+oba = 1
+6 (xa + xb)(xayb /uni2212.texminus xbya) (64)  
+Ma
+agf′ =
+1
+6 |af
+′
+||fg|γ
+/uni0028.big 
+xa + xg + xf′
+)
+, where xf′ = xg (65) 
+The area moment of obg is calculated in the same way for Case-a, 
+equation 
+(27). Accordingly, the moment of the wedge abgf ́ is given by, 
+Mabgf′ =
+(
+Ma
+obg + Ma
+oba + Ma
+agf′
+)
+γ (66) 
+Now, by taking moment equilibrium about the Pole O for the forces 
+shown in Fig. 8, 
+L1 = | at| /uni2212.texminus | ak| (67)  
+|at| = 2
+3 |ab|cosδ (68)  
+|ak| = | ξ|sin
+υ (69)  
+where υ = η/uni2212.texminus δ+ ω. 
+Calculation of the passive zone forces PRWand Fq are shown below, 
+HRW = |fg|
+cosβ (70)  
+PRW = 1
+2 γH2
+RWkpcosβ (71)  
+Fq = qcosβkpHRW (72)  
+LRW =
+2
+3 |fg| /uni2212.texminus | ξ|sin
+α1 (73)  
+af = | ag|cosα1 (74)  
+V= q|af
+′
+|,
+where 
+af
+′
+= af+ fgtanβ (75)  
+LV =
+⃒
+⃒
+⃒
+⃒
+(
+/uni0028.big 
+|xa| +
+⃒
+⃒xf′
+⃒
+⃒)
+2
+)
+/uni2212.texminus | xa|
+⃒
+⃒
+⃒
+⃒ (76)  
+Mqh = FqLq (77)  
+Lq =
+1
+2 |fg| /uni2212.texminus | ξ|sin
+α1 (78) 
+Finally, 
+Pp = 1
+L1
+/uni0028.big 
+PRWLRW + VLV + Mqh + Mabgf′
+)
+(79) 
+Passive force = min Pp. 
+Fig. 8. Forces and moment arms about Pole O in Case-b.  
+A.S. Alqarawi et al.                                                                                                                                                                                                                            
+Computers and Geotechnics 130 (2021) 103926
+8
+4. Validation of the solution 
+In order to validate the solution discussed above, a series of physical 
+model tests were carried out on a loose dry sand. The tests were con-
+ducted using the test chamber shown in 
+Fig. 9 below. The chamber in-
+cludes a 700 mm × 250 mm × 300 mm tank to accommodate the soil 
+and a 250 mm × 300 mm × 13 mm steel wall to retain the soil. The front 
+side of the tank is made of a 50 mm thick clear acrylic panel to allow for 
+visual observation. The steel wall is supported by two metal bars, to 
+maintain pure translational movement, and being moved using a 
+threaded movement bar. A load cell is placed between the movement bar 
+and the wall to measure the total applied force. The movement is 
+monitored during the tests using a displacement dial gauge. 
+The soil used in the experiments is a dry uniform sand with a grain 
+size ranging between 150 and 300 µ m. The unit weight of the sand used 
+in each test was calculated by measuring the weight of the sand and the 
+volume occupied. Direct shear tests were conducted to determine the 
+internal friction angle of the sand as well as the sand-wall and sand- 
+acrylic interface friction angles. 
+Table 1 summarises the properties of 
+the sand used in the tests. 
+Displacement-controlled passive wall movement was applied by 
+spinning the movement bar clockwise, which pushes the wall against the 
+soil. The fine threads in the movement bar helped to achieve a slow and 
+uniform displacement throughout the test. 
+4.1. Experimental results 
+The primary objective of the laboratory experiments in this study is 
+to obtain real data about the passive earth pressure. Therefore, attention 
+was given to estimate the frictional forces between the wall and the 
+sides/base of the tank as well as between the sand and the sides of the 
+tank. Subsequently these forces were subtracted from the total measured 
+force. 
+Fig. 10 shows the passive force – displacement curves for three 
+different experiments. In these experiments the height of the retained 
+soil varied to obtain multiple validation data points. 
+The maximum passive forces for the three tests in 
+Fig. 10 are sum-
+marized in Table 2. The log-spiral solution developed in this study was 
+formulated in a spreadsheet, and then used to calculate the passive earth 
+pressures for the same conditions prescribed in the experiments. The 
+passive force of each test is determined as the minimum force in the 
+P
+p /uni2212.texminus ξ diagram. Fig. 11 shows the Pp /uni2212.texminus ξ plots for the three tests. 
+The positive values of the distance ξ in Fig. 11 refer to the Pole of the 
+log-spiral located inside the soil mass, while the negative values refer to 
+the Pole located outside the soil mass. It is evident that the Pole in all of 
+the three tests was located outside the soil mass but at different radial 
+distances. 
+The log-spiral results are then compared with the corresponding 
+experimental results as well as those calculated using Coulomb and 
+Rankine methods. In this case, the magnitudes of the angles β,
+ω and the 
+surcharge q are equal to zero. 
+Table 2 illustrates a comparison between the measured and calcu-
+lated data. It is apparent that the passive forces calculated using the 
+developed log-spiral solution correlate well with the measured data. The 
+passive forces determined using the Coulomb method overestimates the 
+measured forces, while the Rankine method significantly un-
+derestimates the passive forces. 
+In an attempt to verify the assumption about the shape of the failure 
+surface, which consists of a curved part (presumably spiral arc) and a 
+tangent line, the actual failure surface was investigated using images 
+captured during the experiments. The PIV technique developed by 
+Sta-
+nier et al. (2015) was used to capture the actual failure surface devel-
+oped in one of the experiments (retained height = 0.24 m). The failure 
+surface can be clearly observed in Fig. 12 (Sigdel et al., 2021). 
+Fig. 12a shows the contour map for total displacements plotted 
+across the soil mass. The failure surface can be seen along the dotted 
+line, which consists of a curved part at the bottom and a tangent line 
+rising towards the soil surface. Similarly, the shear band plot in 
+Fig. 12b 
+clearly indicates the failure surface, which consists of a curved part and a 
+straight line. 
+In order to further confirm the validation of the log-spiral solution 
+proposed in this paper against real data measured at a larger scale, 
+reference was also made to experimental results reported by 
+Fang et al. 
+(2002). They conducted a series of tests on dry Ottawa sand to measure 
+the passive pressure acting on a rigid steel wall under a monotonic 
+translational movement. The properties of the backfill used by 
+Fang 
+et al. (2002) are summarized in Table 3. 
+The proposed log-spiral solution was used to calculate the passive 
+earth pressure based on the critical state properties. The results show 
+that the proposed method successfully replicated the measured data 
+within an error of less than 10% as shown in 
+Table 4. The log-spiral 
+solution has also been used to produce results for the coefficient of 
+passive earth pressure k
+pand compared with those reported by Shiau 
+et al. (2008) and other researchers. They reported results of kpcalculated 
+using different methods. The comparison is shown in Table 5 . It is 
+apparent that the results of the present log-spiral solution fits well in the 
+admissible solution field of 
+Shiau et al. (2008). They also closely agree 
+with the data reported by Caquot and Kerisel (1948). 
+Fig. 9. The test chamber.  
+Table 1 
+Properties of the soil used in the tests.  
+Unit weight (kN/m3) 15.3 
+Internal friction angle 35.5 ◦
+Sand-wall friction angle 24 ◦
+Sand-acrylic friction angle 25 ◦
+A.S. Alqarawi et al.                                                                                                                                                                                                                            
+Computers and Geotechnics 130 (2021) 103926
+9
+4.2. Effects of the wall-soil interface friction 
+According to Terzaghi et al. (1996), the angle of friction between the 
+backfill and the retaining structure influences the curvature of the log- 
+spiral arc and consequently on the passive soil pressure acting on the 
+wall. Hence, it is worthwhile to investigate the interaction behaviour at 
+different interface friction angles. The log-spiral solution developed in 
+this study was utilized as an efficient and simple tool to conduct this 
+investigation. In order to investigate the influence of the wall-soil 
+interface friction, the magnitudes of angles β,
+ω and the surcharge q 
+are equated to zero. 
+Fig. 13 shows the relationship between the passive earth pressure 
+and the retained height of the soil at different values of the interface 
+friction angle δ as well as soil friction angle φ. It is apparent that the 
+Fig. 10. Passive force vs Horizontal displacement.  
+Table 2 
+Comparison between the calculated and measured passive forces.  
+Test Retained height 
+(m) 
+Passive soil force (N) 
+Measured Log-spiral 
+solution (this 
+paper) 
+Coulomb Rankine 
+Force ξ(m)  
+1  0.2 3067.7 2511 /uni2212.texminus 0.16 3286  1153.8 
+2  0.24 3593.6 3614.4 /uni2212.texminus 0.2 4732.6  1661.4 
+3  0.28 4837 4919.1 /uni2212.texminus 0.24 6441.6  2261.4  
+Fig. 11. Passive force vs the radial distance ( ξ).  
+A.S. Alqarawi et al.                                                                                                                                                                                                                            
+Computers and Geotechnics 130 (2021) 103926
+10
+passive force acting on the wall relates proportionally to the wall-soil 
+interface friction angle at a given soil friction angleφ. According to 
+Fig. 13(φ = 25
+◦
+), when δ= φ the passive soil force is 77% higher than 
+that obtained with δ= 0 for a 4 m retained soil height. This justifies the 
+low passive forces calculated using Rankine method, which assumes a 
+smooth interface between the backfill and the wall. However, the in-
+fluence of the interface friction becomes more significant at a higher 
+friction angleφ. According to 
+Fig. 13 (φ = 30
+◦
+) and ( ϕ = 35
+◦
+), the 
+passive earth pressure at δ= φ are 119% and 185% greater than those 
+calculated at δ = 0, respectively. 
+Fig. 14 illustrates the effect of the ratio δ/ϕ on the passive earth force 
+Pp. At a given magnitude of soil friction angleφ, the curvature of the log- 
+spiral arc is governed by the interface friction angle δ. While the angles 
+α1and α2are independent of δ, the passive Rankine zone enlarges when 
+the ratio δ/ϕ increases. This, in turn, results in a larger passive soil 
+wedge, abg
+′
+e
+′
+, and consequently a greater passive earth force. The in-
+crease in the size of the spiral arc emerges from a reduction in the radial 
+distanceξ. Hence the Pole moves closer to the soil mass so that ro de-
+creases while the area abg increases. 
+Fig. 12a. Total displacement contour map based on PIV analysis ( Sigdel et al., 2021).  
+Fig. 12b. Shear band plot based on PIV analysis ( Sigdel et al., 2021).  
+Table 3 
+Properties of sand used by 
+Fang et al. (2002).  
+Soil Sample Unit weight kN/m 3 Soil friction angle◦ Interface friction δ◦
+Peak Critical 
+Loose  15.7 33  31.5 9.8 
+Medium dense  16.3 38  31.5 12.6 
+Dense  16.8 42  31.5 14  
+Table 4 
+Comparison between the calculated results and the data reported by 
+Fang et al. 
+(2002).  
+Soil Sample Measured force 
+(N) 
+Calculated force (N) (log-spiral, 
+this paper) 
+Error 
+% 
+Loose 6300 6826  8.3 
+Medium 
+dense 
+10,125 11,044  9.07 
+Dense 15,600 15,011  /uni2212.texminus 3.7  
+A.S. Alqarawi et al.                                                                                                                                                                                                                            
+Computers and Geotechnics 130 (2021) 103926
+11
+This fact leads to another conclusion about the interrelation between 
+the ratio δ/ϕ and the radial distance ξ. This relation was examined by 
+plotting the Pp /uni2212.texminus ξ diagram over a range of δ/ϕ ratios. According to 
+Fig. 15, in regular conditions (when the ratio δ/ϕ is between zero and 1), 
+the Pole is generally located outside the soil mass. However, the location 
+of the Pole moves toward the soil mass as the ratio δ/ϕ increases. At 
+Table 5 
+Comparison between the values of k
+p calculated using the log-spiral solution and those calculated using different methods (Shiau et al., 2008).  
+ϕ = 40◦, β = 0, ω = 0  
+δ/φ  Coulomb 
+theory 
+Caquot and 
+Kerisel (1948) 
+Log spiral method (Duncan 
+and Mokwa, 2001) 
+Sokolovski 
+(1960) 
+Upper bound  
+Chen (1975) 
+Lower bound -Upper bound  
+Shiau et al. (2008) 
+Log-spiral solution 
+(this paper) 
+0  4.60  4.59  4.60 4.60  4.60 4.60 – 4.61  4.61 
+1/ 
+3  
+8.15  8.13  8.17 _  7.73 6.87 – 7.79  7.58 
+1/ 
+2  
+11.77  10.36  10.50 9.69  10.08 8.79 – 10.03  9.74 
+2/ 
+3  
+18.72  13.10  13.08 _  13.09 11.30 – 12.87  12.24 
+1  92.72  17.50  17.50 18.20  20.91 18.64 – 20.10  18.86  
+Fig. 13. The effect of the interface friction on the passive earth pressure.  
+Fig. 14. The effect of the interface friction on the size of the passive wedge.  
+A.S. Alqarawi et al.                                                                                                                                                                                                                            
+Computers and Geotechnics 130 (2021) 103926
+12
+some extreme cases where δ/ϕ = 2, the Pole becomes clearly inside the 
+soil mass. This phenomenon is associated with a dramatic increase in the 
+magnitude of the passive soil force Pp. 
+4.3. Effects of backfill slope angle 
+The influence of the backfill slope β on the response of the retained 
+soil to a passive wall movement has been reported by a number of 
+studies. 
+Shiau et al. (2008) investigated the effects of the backfill slope 
+on the passive earth pressure coefficient using a finite element analysis. 
+Fang et al. (1997) conducted experiments on a sloped backfill to study 
+the effect of the backfill slope on the coefficients of lateral earth pressure 
+k
+pand ka. Those researchers concluded that, both the magnitude of the 
+horizontal passive earth pressure coefficient, kp, and the wall movement 
+needed for the backfill to reach a passive state increase when the backfill 
+inclination angle β increases. 
+The data reported by 
+Fang et al. (1997), for a normalised horizontal 
+wall displacement (S/H) equals to 0.3, and Shiau et al. (2008) were used 
+to quantitatively validate the log-spiral solution at different backfill 
+slope angles. 
+Fig. 16 shows that the results of the log-spiral solution fits 
+perfectly between the upper and lower bound results reported by Shiau 
+et al. (2008) but underestimate the experimental data of Fang et al. 
+(1997). This disparity could be attributed to the frictional and the 
+boundary reaction effects in the experimental tests of Fang et al. (1997), 
+which may overestimate the actual values of kp. The results obtained 
+from the log spiral solution have also shown qualitative agreement with 
+the findings of 
+Fang et al. (1997) and Shiau et al. (2008) in relation to 
+the effects of the backfill slope angle β. Fig. 17 shows that the magnitude 
+of the passive earth force Pp increases with the magnitude of β at a given 
+δ/ϕ ratio. The effect of β is greater for higher internal friction angle. 
+4.4. Effects of Wall Inclination 
+Shiau et al. (2008) reported a relationship between the internal 
+friction angle and the passive earth pressure coefficient, kp, at a different 
+wall angles, ω. The log-spiral solution was compared with the corre-
+sponding results reported by Shiau et al. (2008). Fig. 18 shows that the 
+results of the proposed log-spiral solution agree well with those reported 
+by 
+Shiau et al. (2008) with an error margin not exceeding 10%. 
+The effects of wall inclination have also been investigated at different 
+interface friction angles ( δ) as well as backfill slopes. It has been 
+concluded that the inclination angle, ω, contributes to reduce the passive 
+earth force Pp as well as the passive earth pressure coefficient, kp. Such 
+influence, however, is insignificant when the wall is frictionless (δ = 0). 
+The effects of the angle ω becomes prominent when the ratio δ/ϕ in-
+creases. Fig. 19 shows that when δ/ϕ = 1, the passive earth force de-
+creases by approximately 35% as the angle ω increases from zero to 20◦. 
+This behaviour was observed to be independent of the backfill slope 
+angle β. 
+5. Calculation of passive pressure coefficient kp 
+The solution developed in this study is applied to calculate the co-
+Fig. 15. The relationship between the interface friction and the location of Spiral Pole.  
+Fig. 16. Comparison with experimental results (after Fang et al. (1997) and 
+Shiau et al. (2008)). 
+A.S. Alqarawi et al.                                                                                                                                                                                                                            
+Computers and Geotechnics 130 (2021) 103926
+13
+efficient of passive earth pressure kp. Tables 6– 9 provide a ready-made 
+data sheets to identify the magnitude of kp with respect to different 
+wall, slope and soil conditions. 
+6. Conclusions 
+A comprehensive and rigorous generalised solution was formulated 
+Fig. 17. The effect of the backfill slope on the passive earth pressure.  
+Fig. 18. Validation of the log-spiral solution against results from Shiau et al. (2008).  
+Fig. 19. The effect of the wall inclination angle on the passive earth pressure.  
+A.S. Alqarawi et al.                                                                                                                                                                                                                            
+Computers and Geotechnics 130 (2021) 103926
+14
+Table 6 
+Coefficient of passive pressure k
+p(φ = 40◦).  
+δ
+φ  
+φ = 40◦
+ω = 0◦ ω = 5
+◦
+ω = 10
+◦
+ω = 15
+◦
+β =
+0
+◦
+β =
+5
+◦
+β =
+10
+◦
+β =
+15
+◦
+β = 0
+◦
+β = 5
+◦
+β =
+10
+◦
+β =
+15
+◦
+β =
+0
+◦
+β = 5
+◦
+β =
+10
+◦
+β =
+15
+◦
+β =
+0
+◦
+β = 5
+◦
+β =
+10
+◦
+β =
+15
+◦
+0  4.61  5.47  6.45  7.55  4.1  4.8  5.61  6.54 3.7  4.32 5 5.78 3.46  4.03  4.65 5.31 
+1/ 
+3  
+7.58  9.27  11.2  13.5  6.44  7.84  9.5  11.5 5.56  6.76 8.17 9.72 4.86  5.92  7.13 8.5 
+1/ 
+2  
+9.74  12.2  14.6  17.4  8.14  10.0  12.3  14.7 6.97  8.56 10.5 12.5 6.03  7.42  9.05 10.9 
+2/ 
+3  
+12.2  15.2  18.6  22.6  10.3  12.7  15.5  18.8 8.67  10.8 13.2 16 7.46  9.3  11.5 13.8 
+1  18.8  23.7  29.7  35.9  15.6  19.5  24.2  29.6 13  16.3 20.3 25.8 11  13.9  17.2 21  
+Table 7 
+Coefficient of passive pressure k
+p(φ = 35
+◦
+).  
+δ
+φ  
+φ = 35
+◦
+ω = 0
+◦
+ω = 5
+◦
+ω = 10
+◦
+ω = 15
+◦
+β =
+0
+◦
+β =
+5
+◦
+β =
+10
+◦
+β =
+15
+◦
+β =
+0
+◦
+β = 5
+◦
+β =
+10
+◦
+β =
+15
+◦
+β =
+0
+◦
+β =
+5
+◦
+β =
+10
+◦
+β =
+15
+◦
+β =
+0
+◦
+β =
+5
+◦
+β =
+10
+◦
+β =
+15
+◦
+0  3.7  4.29  4.95 5.63  3.34  3.86  4.42  5.02 3.1 3.56  4.06  4.58  2.9  3.36  3.83  4.3 
+1/ 
+3  
+5.42  6.44  7.54 8.7  4.75  5.64  6.6  7.64 4.21 5  5.86  6.78  3.79  4.5  5.29  6.12 
+1/ 
+2  
+6.54  7.85  9.36 10.9  5.67  6.78  8.01  9.37 5 6  7.06  8.2  4.46  5.34  6.31  7.36 
+2/ 
+3  
+7.8  9.36  11.1 13  6.76  8.12  9.62  11.2 5.92 7.16  8.48  9.9  5.22  6.3  7.52  8.85 
+1  10.8  13.1  15.7 18.5  9.2  11.2  13.4  15.8 8.26 9.69  11.6  13.7  7.13  8.75  10.6  12.1  
+Table 8 
+Coefficient of passive pressure k
+p(φ = 30
+◦
+).  
+δ
+φ  
+φ = 30
+◦
+ω = 0
+◦
+ω = 5
+◦
+ω = 10
+◦
+ω = 15
+◦
+β =
+0
+◦
+β =
+5
+◦
+β =
+10
+◦
+β =
+15
+◦
+β =
+0
+◦
+β =
+5
+◦
+β =
+10
+◦
+β =
+15
+◦
+β =
+0
+◦
+β =
+5
+◦
+β =
+10
+◦
+β =
+15
+◦
+β =
+0
+◦
+β =
+5
+◦
+β =
+10
+◦
+β =
+15
+◦
+0 3  3.43  3.86 4.29  2.76  3.15  3.54  3.92  2.59  2.96  3.33  3.68  2.47 2.83  3.19  3.53 
+1/ 
+3 
+4.02  4.66  5.33 5.97  3.61  4.2  4.79  5.37  3.28  3.81  4.37  4.9  3.02 3.52  4.04  4.54 
+1/ 
+2 
+4.62  5.4  6.2 7  4.13  4.81  5.53  6.23  3.73  4.36  5.02  5.66  3.41 4  4.61  5.21 
+2/ 
+3 
+5.27  6.17  7.11 8.03  4.71  5.52  6.36  7.18  4.22  4.69  5.75  6.52  3.83 4.51  5.23  5.93 
+1 6.68  7.9  9.2 10.4  5.88  6.97  8.1  9.22  5.34  6.35  7.41  8.47  4.78 5.7  6.65  7.6  
+Table 9 
+Coefficient of passive pressure k
+p(φ = 25
+◦
+).  
+δ
+φ  
+φ = 25
+◦
+ω = 0
+◦
+ω = 5
+◦
+ω = 10
+◦
+ω = 15
+◦
+β =
+0
+◦
+β =
+5
+◦
+β =
+10
+◦
+β =
+15
+◦
+β =
+0
+◦
+β =
+5
+◦
+β =
+10
+◦
+β =
+15
+◦
+β =
+0
+◦
+β =
+5
+◦
+β =
+10
+◦
+β =
+15
+◦
+β =
+0
+◦
+β =
+5
+◦
+β =
+10
+◦
+β =
+15
+◦
+0  2.47  2.77  3.06  3.3  2.31  2.6  2.87  3.11  2.19 2.48  2.75 3  2.12  2.41  2.68  2.91 
+1/ 
+3  
+3.06  3.48  3.88  4.2  2.81  3.2  3.57  3.88  2.61 3  3.34 3.63  2.46  2.81  3.15  3.44 
+1/ 
+2  
+3.4  3.86  4.32  4.7  3.1  3.55  3.97  4.33  2.87 3.29  3.7 4.02  2.68  3.08  3.47  3.8 
+2/ 
+3  
+3.73  4.28  4.81  5.24  3.41  3.91  4.4  4.8  3.13 3.6  4.05 4.43  2.92  3.37  3.8  4.16 
+1  4.52  5.21  5.88  6.43  4.05  4.68  5.29  5.79  3.7 4.27  4.83 5.3  3.4  3.95  4.48  4.91  
+A.S. Alqarawi et al.                                                                                                                                                                                                                            
+Computers and Geotechnics 130 (2021) 103926
+15
+based on the Terzaghi method to estimate the lateral passive pressure of 
+the soil exerted on a retaining structure. The developed method can be 
+used to calculate the passive force under different values of soil friction 
+angle, soil-wall interface friction, backfill slope and wall inclination 
+angles. A series of experiments were carried out to validate the devel-
+oped method. Also, the developed equations were validated against 
+measured data reported in the literature. Based on the results following 
+conclusions can be reached, 
+The log-spiral solution developed herein is an accurate method to 
+calculate the lateral earth pressure. The results calculated using the 
+proposed method agree with the measured data better than those 
+calculated using Rankine or Coulomb methods. 
+The passive earth pressure depends heavily on the internal friction 
+angle of the soil and the interface friction between the backfill and the 
+retaining wall. 
+The location of the Pole of the log-spiral arc is often located outside 
+the soil mass. However, in cases where the interface friction is too high, 
+the Pole may be located inside the soil mass. 
+The failure plane derived using the images captured during experi-
+ments confirms that it is not a straight linear failure surface but a curved 
+surface closer to the toe of the wall and a straight line towards the 
+retained soil surface, which resembles the failure surface assumed for 
+the log-spiral solution presented in this paper. 
+The log-spiral solution can be easily programmed using MATLAB or 
+even using an EXCEL spreadsheet, which provides an efficient and easy 
+tool for engineers to estimate the passive earth pressure accurately. 
+CRediT authorship contribution statement 
+A.S. Alqarawi: Conceptualization, Methodology, Formal analysis, 
+Validation, Visualization, Writing - original draft. C.J. Leo: Conceptu-
+alization, Methodology, Writing - review & editing. D.S. Liyanapa-
+thirana: Conceptualization, Writing - review & editing. L. Sigdel: 
+Validation. M. Lu: Methodology, Validation. P. Hu: Validation, Writing 
+- review & editing. 
+Declaration of Competing Interest 
+The authors declare that they have no known competing financial 
+interests or personal relationships that could have appeared to influence 
+the work reported in this paper. 
+Acknowledgment 
+The Authors acknowledge the Australian Government Research 
+Training Program for supporting this research. 
+References 
+Caquot, A., Kerisel, J., 1948. Tables for the Calculation of Passive Pressure, Active 
+Pressure and Bearing Capacity of Foundations. Gauthier, Villars, Paris .  
+Chen, W.F., 1975. Limit Analysis and Soil Plasticity. Elsevier, Amsterdam .  
+Coulomb, C.A., 1973. Essai sur une application des regles de maximis et minimis a 
+quelques problemes de statique relatifs a l ’architecture (essay on maximums and 
+minimums of rules to some static problems relating to architecture). 
+Duncan, J.M., Mokwa, R.L., 2001. Passive earth pressures: theories and tests. J. Geotech. 
+Geoenviron. Eng. 127 (3), 248 – 257. 
+Fang, Y.S., Chen, J.M., Chen, C.Y., 1997. Earth pressures with sloping backfill. 
+J. Geotech. Geoenviron. Eng. 123 (3), 250 – 259. 
+Fang, Y.S., Ho, Y.C., Chen, T.J., 2002. Passive earth pressure with critical state concept. 
+J. Geotech. Geoenviron. Eng. 128 (8), 651 – 659. 
+Kunin, J., Alampalli, S., 2000. Integral abutment bridges: Current practice in United 
+States and Canada. J. Perform. Constr. Facil 14 (3), 104 – 111. 
+Liu, S., Xia, Y., Liang, L., 2018. A modified logarithmic spiral method for determining 
+passive earth pressure. J. Rock Mech. Geotech. Eng. 10 (6), 1171 – 1182. 
+Patki, M.A., Mandal, J.N., Dewaikar, D.M., 2015. Determination of passive earth pressure 
+coefficients using limit equilibrium approach coupled with the K¨otter equation. Can. 
+Geotech. J. 52 (9), 1241 – 1254. 
+Rankine, W.J.M., 1857. II. On the stability of loose earth. Philos. Trans. R. Soc. Lond. 
+147, 9– 27. 
+Rollins, K. M., Scott, E., Marsh, A., 2017. Geofoam inclusions for reducing passive force 
+on bridge abutments based on large-scale tests. In: Geotechnical Frontiers 2017, pp. 
+59– 68. 
+Sigdel, L.D., Leo, C., Liyanapathirana, S., Hu, P., 2021. Integral bridge abutment-soil 
+interaction analysis using PIV technique. In: The 3rd International Conference on 
+Geotechnical Engineering, Colombo, Sri Lanka (in press). 
+Sokolovski, V., 1960. Static of Soil Media. Butterworths Publications, London .  
+Stanier, S.A., Blaber, J., Take, W.A., White, D., 2015. Improved image-based deformation 
+measurement for geotechnical applications. Can. Geotech. J. 53, 727 – 739. 
+Shiau, J.S., Augarde, C.E., Lyamin, A.V., Sloan, S.W., 2008. Finite element limit analysis 
+of passive earth resistance in cohesionless soils. Soils Found. 48 (6), 843 – 850. 
+Terzaghi, K., 1943. Theoretical Soil Mechanics. John Wiley & Sons, Inc., New York, 
+pp. 11– 15. 
+Terzaghi, K., Peck, R.B., Mesri, G., 1996. Soil mechanics in engineering practice, 3rd ed. 
+John Wiley & Sons Inc, New York.  
+Wilson, P., Elgamal, A., 2010. Large-scale passive earth pressure load-displacement tests 
+and numerical simulation. J. Geotech. Geoenviron. Eng. 136 (12), 1634 – 1643. 
+A.S. Alqarawi et al.                                                                                                                                                                                                                            

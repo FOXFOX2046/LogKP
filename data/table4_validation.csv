@@ -1,0 +1,4 @@
+soil_sample,measured_force_N,published_log_spiral_force_N,published_error_pct
+Loose,6300,6826,8.3
+Medium dense,10125,11044,9.07
+Dense,15600,15011,-3.7

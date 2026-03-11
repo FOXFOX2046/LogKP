@@ -1,0 +1,4 @@
+test_id,H_m,gamma_kN_m3,phi_deg,delta_deg,beta_deg,omega_deg,q_kPa,measured_force,published_log_spiral_force,xi_m
+1,0.2,15.3,35.5,24,0,0,0,3067.7,2511,-0.16
+2,0.24,15.3,35.5,24,0,0,0,3593.6,3614.4,-0.2
+3,0.28,15.3,35.5,24,0,0,0,4837,4919.1,-0.24

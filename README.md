@@ -15,6 +15,30 @@ This workspace implements a Streamlit-based verification app for the paper:
 - `data/`: validation tables transcribed from the paper
 - `tests/`: smoke tests for solver behavior
 
+## Python File Guide
+
+### Main calculation files
+
+- [`C:/Users/dev/Documents/Playground/KP EQU/solver.py`](/Users/dev/Documents/Playground/KP%20EQU/solver.py)
+  Main calculation logic. This file contains the core passive pressure solver, including `evaluate_xi()` for a single trial xi value and `scan_xi()` for the full xi search.
+
+- [`C:/Users/dev/Documents/Playground/KP EQU/geometry.py`](/Users/dev/Documents/Playground/KP%20EQU/geometry.py)
+  Geometry construction for the log-spiral failure mechanism. This file builds the key points, spiral curve, wall geometry, lever arms, and wedge polygon used by the solver.
+
+- [`C:/Users/dev/Documents/Playground/KP EQU/validation.py`](/Users/dev/Documents/Playground/KP%20EQU/validation.py)
+  Validation and reference-table utilities. This file generates rebuilt Table 6-9 values, validation comparisons, and the DM7 approximation tables used in the Verification tab.
+
+- [`C:/Users/dev/Documents/Playground/KP EQU/app.py`](/Users/dev/Documents/Playground/KP%20EQU/app.py)
+  Streamlit user interface. This file collects input values, calls the calculation functions, and displays figures, tables, verification outputs, and calculators.
+
+### Supporting calculation files
+
+- [`C:/Users/dev/Documents/Playground/KP EQU/plots.py`](/Users/dev/Documents/Playground/KP%20EQU/plots.py)
+  Plotting helpers for the passive force scan chart and geometry visualization.
+
+- [`C:/Users/dev/Documents/Playground/KP EQU/numerical_checks.py`](/Users/dev/Documents/Playground/KP%20EQU/numerical_checks.py)
+  Numerical verification helpers, including the spiral sector moment check against the analytical expression.
+
 ## Data Structure
 
 ### Core input model

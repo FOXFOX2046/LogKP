@@ -3,6 +3,7 @@ from __future__ import annotations
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+import plotly.graph_objects as go
 
 from solver import PassivePressureResult
 
@@ -84,4 +85,73 @@ def plot_geometry(result: PassivePressureResult):
         fontsize=8,
     )
     fig.tight_layout(rect=(0.0, 0.0, 0.82, 1.0))
+    return fig
+
+
+def plot_fig15_relationship(
+    scan_df: pd.DataFrame,
+    summary_df: pd.DataFrame,
+    x_range: tuple[float, float] | None = None,
+    y_range: tuple[float, float] | None = None,
+):
+    cmap = plt.get_cmap("viridis")
+    ratios = summary_df["delta_ratio"].tolist()
+    colors = [cmap(idx) for idx in np.linspace(0.1, 0.9, max(len(ratios), 2))]
+    color_map = {
+        ratio: f"rgba({int(color[0] * 255)}, {int(color[1] * 255)}, {int(color[2] * 255)}, 1.0)"
+        for ratio, color in zip(ratios, colors)
+    }
+    fig = go.Figure()
+
+    for ratio in ratios:
+        ratio_scan = scan_df.loc[scan_df["delta_ratio"] == ratio]
+        ratio_summary = summary_df.loc[summary_df["delta_ratio"] == ratio].iloc[0]
+        color = color_map[ratio]
+        fig.add_trace(
+            go.Scatter(
+                x=ratio_scan["xi"],
+                y=ratio_scan["passive_force_N"],
+                mode="lines",
+                name=f"δ/φ={ratio_summary['delta_over_phi']}",
+                line={"color": color, "width": 2},
+                hovertemplate="δ/φ=%{fullData.name}<br>ξ=%{x:.4f}<br>Pp=%{y:.1f} N<extra></extra>",
+            )
+        )
+        fig.add_trace(
+            go.Scatter(
+                x=[ratio_summary["critical_xi"]],
+                y=[ratio_summary["minimum_pp_N"]],
+                mode="markers+text",
+                name=f"Minimum {ratio_summary['delta_over_phi']}",
+                text=["Minimum"],
+                textposition="top right",
+                marker={"color": color, "size": 9, "line": {"color": "#0f172a", "width": 1}},
+                showlegend=False,
+                hovertemplate="Minimum<br>ξ=%{x:.4f}<br>Pp=%{y:.1f} N<extra></extra>",
+            )
+        )
+
+    fig.add_vline(x=0.0, line_width=1.2, line_dash="dash", line_color="#64748b")
+    fig.add_annotation(xref="paper", yref="paper", x=0.01, y=0.98, text="Pole inside soil", showarrow=False)
+    fig.add_annotation(xref="paper", yref="paper", x=0.99, y=0.98, text="Pole outside soil", showarrow=False, xanchor="right")
+    fig.update_layout(
+        title="Rebuilt Fig. 15 - Interface Friction vs Pole Location",
+        xaxis_title="ξ",
+        yaxis_title="Passive force (N)",
+        template="plotly_white",
+        legend={"x": 1.02, "y": 1.0, "xanchor": "left", "yanchor": "top"},
+        margin={"l": 60, "r": 140, "t": 60, "b": 50},
+    )
+    fig.update_xaxes(showgrid=True, gridcolor="rgba(148,163,184,0.25)")
+    fig.update_yaxes(
+        showgrid=True,
+        gridcolor="rgba(148,163,184,0.25)",
+        tickformat=".0f",
+        exponentformat="none",
+        separatethousands=False,
+    )
+    if x_range is not None:
+        fig.update_xaxes(range=[x_range[0], x_range[1]])
+    if y_range is not None:
+        fig.update_yaxes(range=[y_range[0], y_range[1]])
     return fig

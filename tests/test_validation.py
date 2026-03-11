@@ -1,4 +1,4 @@
-from validation import evaluate_conclusion_table, load_published_conclusion_table
+from validation import build_fig15_scan_data, evaluate_conclusion_table, load_published_conclusion_table
 
 
 def test_published_conclusion_table_shape():
@@ -12,3 +12,10 @@ def test_evaluate_conclusion_table_summary_has_expected_counts():
     assert diff_df.shape == (5, 17)
     total_cells = summary_df.loc[summary_df["metric"] == "total_cells", "value"].iloc[0]
     assert total_cells == 80
+
+
+def test_build_fig15_scan_data_returns_all_requested_ratios():
+    scan_df, summary_df = build_fig15_scan_data(n_xi=120)
+    assert summary_df["delta_over_phi"].tolist() == ["0", "0.5", "0.75", "1", "1.25", "1.5", "2"]
+    assert scan_df["delta_over_phi"].nunique() == 7
+    assert {"critical_xi", "minimum_pp", "kp"}.issubset(summary_df.columns)

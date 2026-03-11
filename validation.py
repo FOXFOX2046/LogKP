@@ -63,6 +63,7 @@ PAPER_CONCLUSION_VALUES = {
         "1": [4.52, 5.21, 5.88, 6.43, 4.05, 4.68, 5.29, 5.79, 3.70, 4.27, 4.83, 5.30, 3.40, 3.95, 4.48, 4.91],
     },
 }
+FIG15_DELTA_RATIOS = (0.0, 0.5, 0.75, 1.0, 1.25, 1.5, 2.0)
 
 
 def load_table2() -> pd.DataFrame:
@@ -200,15 +201,75 @@ def build_wall_friction_approximation_table_for_phi(phi_deg: float) -> pd.DataFr
     return full_table[["delta_over_phi", column]].rename(columns={column: "w=0_b=0"})
 
 
+def build_fig15_scan_data(
+    phi_deg: float = 30.0,
+    beta_deg: float = 0.0,
+    omega_deg: float = 0.0,
+    H: float = 1.0,
+    gamma: float = 19.0,
+    q: float = 0.0,
+    xi_min: float = -5.0,
+    xi_max: float = 1.0,
+    n_xi: int = 1200,
+    delta_ratios: tuple[float, ...] = FIG15_DELTA_RATIOS,
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    scan_frames: list[pd.DataFrame] = []
+    summary_rows: list[dict[str, float | str]] = []
+
+    for ratio in delta_ratios:
+        delta_deg = phi_deg * ratio
+        inputs = PassivePressureInput(
+            H=H,
+            gamma=gamma,
+            phi_deg=phi_deg,
+            delta_deg=delta_deg,
+            beta_deg=beta_deg,
+            omega_deg=omega_deg,
+            q=q,
+        )
+        scan_df, best = scan_xi(inputs, xi_min=xi_min, xi_max=xi_max, n_xi=n_xi)
+        plot_df = scan_df.copy()
+        plot_df["delta_over_phi"] = _ratio_label(ratio)
+        plot_df["delta_ratio"] = ratio
+        plot_df["delta_deg"] = delta_deg
+        plot_df["passive_force_N"] = plot_df["passive_force"] * 1000.0
+        scan_frames.append(plot_df)
+
+        summary_rows.append(
+            {
+                "delta_over_phi": _ratio_label(ratio),
+                "delta_ratio": ratio,
+                "delta_deg": delta_deg,
+                "critical_xi": best.xi,
+                "case": best.case,
+                "minimum_pp": best.passive_force,
+                "minimum_pp_N": best.passive_force * 1000.0,
+                "kp": 2.0 * best.passive_force / (gamma * H**2),
+            }
+        )
+
+    scan_data = pd.concat(scan_frames, ignore_index=True)
+    summary_df = pd.DataFrame(summary_rows)
+    return scan_data, summary_df
+
+
 def _ratio_label(value: float) -> str:
+    if abs(value - 0.5) < 1e-9:
+        return "0.5"
+    if abs(value - 0.75) < 1e-9:
+        return "0.75"
+    if abs(value - 1.25) < 1e-9:
+        return "1.25"
+    if abs(value - 1.5) < 1e-9:
+        return "1.5"
     if abs(value - 0.0) < 1e-9:
         return "0"
     if abs(value - (1.0 / 3.0)) < 1e-9:
         return "1/3"
-    if abs(value - 0.5) < 1e-9:
-        return "1/2"
     if abs(value - (2.0 / 3.0)) < 1e-9:
         return "2/3"
     if abs(value - 1.0) < 1e-9:
         return "1"
+    if abs(value - 2.0) < 1e-9:
+        return "2"
     return f"{value:.2f}"

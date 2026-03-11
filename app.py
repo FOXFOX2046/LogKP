@@ -26,6 +26,10 @@ def pretty_distance(value: float) -> str:
     return f"{value:.3f} m"
 
 
+def pretty_kp(value: float) -> str:
+    return f"{value:.3f}"
+
+
 def compute_coulomb_kp(phi_deg: float, delta_deg: float, beta_deg: float, theta_deg: float) -> float:
     phi = np.radians(phi_deg)
     delta = np.radians(delta_deg)
@@ -149,10 +153,13 @@ except Exception as exc:
 st.title("Verification of A Spreadsheet-Based Technique to Calculate the Passive Soil Pressure Based on the Log-Spiral Method")
 st.caption("Verification of the published paper calculations and figures.")
 
-hero_left, hero_mid, hero_right = st.columns(3)
+resolved_kp = 2.0 * best.passive_force / (gamma * H**2)
+
+hero_left, hero_mid, hero_right, hero_far_right = st.columns(4)
 hero_left.metric("Minimum Pp", pretty_force_kn(best.passive_force))
 hero_mid.metric("Critical ξ", pretty_distance(best.xi))
 hero_right.metric("Best shape", f"Case {best.case}")
+hero_far_right.metric("Resolved Kp", pretty_kp(resolved_kp))
 
 tab1, tab2, tab3, tab4, tab5 = st.tabs(
     [
@@ -269,6 +276,7 @@ with tab2:
             [
                 ("H", f"{H:.2f} m"),
                 ("Pp", pretty_force_kn(best.passive_force)),
+                ("Resolved Kp", pretty_kp(resolved_kp)),
                 ("Critical ξ", pretty_distance(best.xi)),
                 ("Chosen case", f"Case {best.case}"),
                 ("HRW", pretty_distance(best.trace["HRW"])),
@@ -345,10 +353,12 @@ with tab3:
     st.write(
         "The blue curve is `bg`, the orange line is `gf`, the green line is the backfill surface, and the red dot is pole `O`."
     )
-    pic_a, pic_b, pic_c = st.columns(3)
+    shown_kp = 2.0 * picture_result.passive_force / (gamma * H**2)
+    pic_a, pic_b, pic_c, pic_d = st.columns(4)
     pic_a.metric("Shown ξ", pretty_distance(picture_result.xi))
     pic_b.metric("Shown case", f"Case {picture_result.case}")
     pic_c.metric("Shown Pp", pretty_force_kn(picture_result.passive_force))
+    pic_d.metric("Shown Kp", pretty_kp(shown_kp))
 
 with tab4:
     st.subheader("Every try the app tested")

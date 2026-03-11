@@ -11,7 +11,7 @@ def numerical_spiral_sector_moment(r0: float, phi: float, theta_g: float, lambda
     theta = np.linspace(0.0, theta_g, n)
     r = r0 * np.exp(theta * tan(phi))
     integrand = (1.0 / 3.0) * r**3 * np.sin(theta + lambda_angle)
-    return np.trapz(integrand, theta)
+    return np.sum(0.5 * (integrand[1:] + integrand[:-1]) * np.diff(theta))
 
 
 def compare_spiral_sector_moment(r0: float, phi: float, theta_g: float, lambda_angle: float) -> dict[str, float]:

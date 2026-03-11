@@ -432,7 +432,7 @@ with tab5:
         fig15_xi_max = 1.0
         fig15_n_xi = 1200
     else:
-        fig15_phi_deg = 30.0
+        fig15_phi_deg = float(phi_deg)
         fig15_beta_deg = float(beta_deg)
         fig15_omega_deg = float(omega_deg)
         fig15_H = float(H)
@@ -476,7 +476,10 @@ with tab5:
             f"q = {fig15_q:g}."
         )
 
-    st.caption(f"Figure 15 plotting uses fixed soil friction angle φ = {fig15_phi_deg:.0f}°.")
+    if fig15_mode == "Paper standard rebuild":
+        st.caption(f"Figure 15 plotting uses fixed soil friction angle φ = {fig15_phi_deg:.0f}°.")
+    else:
+        st.caption(f"Figure 15 plotting uses current sidebar soil friction angle φ = {fig15_phi_deg:.0f}°.")
 
     x_axis_default_min = -6.0
     x_axis_default_max = 6.0
